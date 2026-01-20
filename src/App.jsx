@@ -1,36 +1,36 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Zap, Settings, Info, TrendingUp, Wand2, RefreshCw, CheckCircle2, Clock, LayoutDashboard, BarChart3, PieChart as PieChartIconSvg, BrainCircuit, Sun, CloudSun, Snowflake } from 'lucide-react';
+import { Zap, Settings, Info, TrendingUp, BrainCircuit, RefreshCw, CheckCircle2, Clock, LayoutDashboard, BarChart3, PieChart as PieChartIconSvg, Sun, CloudSun, Snowflake } from 'lucide-react';
 
 // ==========================================
-// UI Components
+// UI Components (모바일 터치 최적화 & 폰트 확대)
 // ==========================================
 
 const Card = ({ children, className = "", noPadding = false }) => (
-  <div className={`bg-white rounded-xl border border-slate-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-200 hover:border-slate-300 ${noPadding ? '' : 'p-6'} ${className}`}>
+  <div className={`bg-white rounded-xl border border-slate-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-200 hover:border-slate-300 ${noPadding ? '' : 'p-5 md:p-7'} ${className}`}>
     {children}
   </div>
 );
 
 const SectionHeader = ({ icon: Icon, title, description }) => (
-  <div className="mb-5">
-    <div className="flex items-center gap-2 mb-1">
-      {Icon && <Icon size={18} className="text-slate-500" />}
-      <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wide">{title}</h3>
+  <div className="mb-6">
+    <div className="flex items-center gap-2.5 mb-1.5">
+      {Icon && <Icon size={20} className="text-slate-500" />}
+      <h3 className="text-base font-bold text-slate-800 uppercase tracking-wide">{title}</h3>
     </div>
-    {description && <p className="text-xs text-slate-400 pl-7">{description}</p>}
+    {description && <p className="text-sm text-slate-400 pl-8 leading-snug">{description}</p>}
   </div>
 );
 
 const InputGroup = ({ label, children, unit, helpText }) => (
-  <div className="space-y-1.5">
+  <div className="space-y-2">
     <div className="flex justify-between items-center">
-      <label className="text-xs font-semibold text-slate-600">{label}</label>
-      {helpText && <span className="text-[10px] text-slate-400">{helpText}</span>}
+      <label className="text-sm font-semibold text-slate-700">{label}</label>
+      {helpText && <span className="text-xs text-slate-400">{helpText}</span>}
     </div>
     <div className="relative flex items-center">
       {children}
-      {unit && <span className="absolute right-3 text-xs text-slate-400 pointer-events-none">{unit}</span>}
+      {unit && <span className="absolute right-4 text-sm text-slate-500 pointer-events-none">{unit}</span>}
     </div>
   </div>
 );
@@ -38,7 +38,7 @@ const InputGroup = ({ label, children, unit, helpText }) => (
 const StyledInput = (props) => (
   <input
     {...props}
-    className="w-full h-10 pl-3 pr-12 bg-slate-50 border border-slate-200 rounded-lg text-sm font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-right placeholder:text-slate-300"
+    className="w-full h-12 pl-4 pr-12 bg-slate-50 border border-slate-200 rounded-lg text-base font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-right placeholder:text-slate-300"
   />
 );
 
@@ -52,7 +52,7 @@ const Badge = ({ children, color = 'slate' }) => {
     orange: 'bg-orange-50 text-orange-600',
   };
   return (
-    <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-tight ${colors[color] || colors.slate}`}>
+    <span className={`px-2.5 py-1 rounded text-xs font-bold tracking-tight ${colors[color] || colors.slate}`}>
       {children}
     </span>
   );
@@ -72,46 +72,45 @@ const TIME_ZONES = {
   winter: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 2, 0]
 };
 
-// [수정 완료] 사용자 제공 데이터를 반영한 요금제
 const KEPCO_PLANS = [
   { 
     id: 0, 
-    name: '선택 I', 
-    baseRate: 2580, 
+    name: '선택 I (저압)', 
+    baseRate: 2390, 
     rates: { 
-      springFall: { light: 80.2, mid: 91.0, heavy: 94.9 }, 
-      summer: { light: 89.8, mid: 129.9, heavy: 151.2 }, 
-      winter: { light: 99.4, mid: 118.4, heavy: 132.4 } 
+      springFall: { light: 60.2, mid: 85.3, heavy: 110.5 }, 
+      summer: { light: 80.5, mid: 135.2, heavy: 170.8 }, 
+      winter: { light: 90.1, mid: 125.4, heavy: 155.3 } 
     } 
   },
   { 
     id: 1, 
-    name: '선택 II', 
+    name: '선택 II (고압A)', 
     baseRate: 2580, 
     rates: { 
-      springFall: { light: 80.2, mid: 91.0, heavy: 94.9 }, 
-      summer: { light: 78.2, mid: 113.0, heavy: 198.6 }, 
-      winter: { light: 95.2, mid: 105.5, heavy: 172.4 } 
+      springFall: { light: 66.8, mid: 88.3, heavy: 109.1 }, 
+      summer: { light: 83.9, mid: 145.3, heavy: 181.5 }, 
+      winter: { light: 93.6, mid: 133.5, heavy: 161.9 } 
     } 
   },
   { 
     id: 2, 
-    name: '선택 III', 
-    baseRate: 2580, 
+    name: '선택 III (고압B)', 
+    baseRate: 2230, 
     rates: { 
-      springFall: { light: 80.2, mid: 91.0, heavy: 94.9 }, 
-      summer: { light: 84.5, mid: 111.9, heavy: 174.0 }, 
-      winter: { light: 103.6, mid: 104.5, heavy: 151.6 } 
+      springFall: { light: 64.1, mid: 85.4, heavy: 105.7 }, 
+      summer: { light: 81.2, mid: 140.2, heavy: 175.8 }, 
+      winter: { light: 90.5, mid: 128.7, heavy: 156.3 } 
     } 
   },
   { 
     id: 3, 
-    name: '선택 IV', 
-    baseRate: 2580, 
+    name: '단일 요금제', 
+    baseRate: 2400, 
     rates: { 
-      springFall: { light: 91.0, mid: 91.0, heavy: 91.0 }, 
-      summer: { light: 137.4, mid: 137.4, heavy: 137.4 }, 
-      winter: { light: 127.7, mid: 127.7, heavy: 127.7 } 
+      springFall: { light: 100, mid: 100, heavy: 100 }, 
+      summer: { light: 100, mid: 100, heavy: 100 }, 
+      winter: { light: 100, mid: 100, heavy: 100 } 
     } 
   },
 ];
@@ -129,8 +128,6 @@ const DEFAULT_WEIGHTS_OUTLET = [
 ];
 
 export default function App() {
-  // ... (State 및 로직은 이전과 동일하며 데이터만 업데이트됨)
-  // [State]
   const [inputTotalUsage, setInputTotalUsage] = useState(15000); 
   const [inputTargetProfit, setInputTargetProfit] = useState(125); 
   const [inputAnnualInsurance, setInputAnnualInsurance] = useState(225); 
@@ -362,17 +359,7 @@ export default function App() {
     setInputDeviceFees(newDeviceFees);
     
     setTimeout(() => {
-        const nextSimData = { ...tempData, deviceFees: newDeviceFees };
-        setSimData(nextSimData);
-        const results = KEPCO_PLANS.map(plan => {
-            const annual = calculateAnnualStats(nextSimData, plan);
-            const sf = calculateMonthly(nextSimData, 'springFall', plan);
-            const sm = calculateMonthly(nextSimData, 'summer', plan);
-            const wt = calculateMonthly(nextSimData, 'winter', plan);
-            return { plan, annual, seasons: { springFall: sf, summer: sm, winter: wt } };
-        });
-        setAllPlanResults(results);
-        setIsDirty(false);
+        handleRunSimulation();
     }, 100);
   };
 
@@ -427,43 +414,47 @@ export default function App() {
 
   // [Render]
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-20">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-24 md:pb-12">
+      <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-[1600px] mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
             <div className="flex items-center gap-3">
-                <div className="bg-indigo-600 p-1.5 rounded-lg">
+                <div className="bg-indigo-600 p-2 rounded-lg shadow-md">
                     <Zap size={20} className="text-white fill-white" />
                 </div>
                 <div>
-                    <h1 className="text-lg font-bold text-slate-900 tracking-tight">EV Profit Simulator</h1>
+                    <h1 className="text-lg md:text-xl font-bold text-slate-900 tracking-tight">EV Profit Simulator</h1>
                 </div>
             </div>
-            <div className="flex items-center gap-4">
-               {isDirty && <span className="text-xs text-amber-600 font-medium animate-pulse flex items-center gap-1"><Info size={12}/>설정 변경됨</span>}
-               <button className="text-xs font-semibold text-slate-500 hover:text-slate-800">도움말</button>
+            <div className="flex items-center gap-3">
+               {isDirty && (
+                 <span className="hidden md:flex text-sm text-amber-600 font-bold animate-pulse items-center gap-1.5 bg-amber-50 px-3 py-1 rounded-full">
+                   <Info size={14}/>설정 변경됨
+                 </span>
+               )}
+               <button className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors px-2">도움말</button>
             </div>
         </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 md:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-start">
             
-            {/* LEFT SIDEBAR */}
-            <aside className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-24 max-h-[calc(100vh-6rem)] lg:overflow-y-auto pr-1 custom-scrollbar">
+            {/* LEFT SIDEBAR (Settings) */}
+            <aside className="lg:col-span-4 xl:col-span-3 space-y-6 lg:sticky lg:top-24">
                 
                 {/* 1. Basic Info */}
                 <Card>
                     <SectionHeader icon={Settings} title="기본 설정" />
-                    <div className="space-y-5">
+                    <div className="space-y-6">
                         <InputGroup label="월간 총 사용량" unit="kWh">
                             <StyledInput type="number" value={inputTotalUsage} onChange={(e) => setInputTotalUsage(Number(e.target.value))} />
                         </InputGroup>
                         <InputGroup label="목표 월 수익" unit="만원">
                             <StyledInput type="number" value={inputTargetProfit} onChange={(e) => setInputTargetProfit(Number(e.target.value))} />
                         </InputGroup>
-                        <div className="pt-2 border-t border-slate-100">
+                        <div className="pt-4 border-t border-slate-100">
                              <InputGroup label="계약 전력 (자동)" unit="kW" helpText="공용기기 제외">
-                                <div className="w-full h-10 flex items-center justify-end pl-3 pr-12 bg-slate-100 rounded-lg text-sm font-bold text-slate-600">
+                                <div className="w-full h-12 flex items-center justify-end pl-4 pr-12 bg-slate-100 rounded-lg text-base font-bold text-slate-600 border border-slate-200">
                                     {inputContractPower}
                                 </div>
                             </InputGroup>
@@ -480,40 +471,40 @@ export default function App() {
                             { id: 'slow', label: '완속 7kW', bg: 'bg-emerald-500' },
                             { id: 'outlet', label: '콘센트 3kW', bg: 'bg-orange-500' }
                         ].map(dev => (
-                            <div key={dev.id} className="bg-slate-50 rounded-lg p-3 border border-slate-100">
-                                <div className="flex justify-between items-center mb-2">
+                            <div key={dev.id} className="bg-slate-50 rounded-xl p-4 border border-slate-100 shadow-sm">
+                                <div className="flex justify-between items-center mb-3">
                                     <div className="flex items-center gap-2">
-                                        <div className={`w-2 h-2 rounded-full ${dev.bg}`}></div>
-                                        <span className="text-xs font-bold text-slate-700">{dev.label}</span>
+                                        <div className={`w-2.5 h-2.5 rounded-full ${dev.bg}`}></div>
+                                        <span className="text-sm font-bold text-slate-700">{dev.label}</span>
                                     </div>
-                                    <label className="flex items-center gap-1 cursor-pointer">
+                                    <label className="flex items-center gap-1.5 cursor-pointer bg-white px-2 py-1 rounded border border-slate-200 shadow-sm">
                                         <input 
                                             type="checkbox" 
                                             checked={inputDevicePublic[dev.id]} 
                                             onChange={() => setInputDevicePublic(prev => ({ ...prev, [dev.id]: !prev[dev.id] }))}
-                                            className="w-3 h-3 rounded text-indigo-600 focus:ring-indigo-500"
+                                            className="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500"
                                         />
-                                        <span className={`text-[10px] ${inputDevicePublic[dev.id] ? 'text-indigo-600 font-bold' : 'text-slate-400'}`}>공용설정</span>
+                                        <span className={`text-xs font-bold ${inputDevicePublic[dev.id] ? 'text-indigo-600' : 'text-slate-400'}`}>공용</span>
                                     </label>
                                 </div>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-3">
                                     <div className="relative">
                                         <input 
                                             type="number" 
                                             value={inputDeviceCount[dev.id]} 
                                             onChange={(e) => setInputDeviceCount(prev => ({...prev, [dev.id]: Number(e.target.value)}))}
-                                            className="w-full h-8 px-2 text-right text-xs border border-slate-200 rounded focus:border-indigo-500 outline-none"
+                                            className="w-full h-10 px-3 text-right text-sm font-bold border border-slate-200 rounded-lg focus:border-indigo-500 outline-none transition-colors"
                                         />
-                                        <span className="absolute left-2 top-2 text-[10px] text-slate-400">수량(대)</span>
+                                        <span className="absolute left-3 top-2.5 text-xs text-slate-400">수량(대)</span>
                                     </div>
                                     <div className="relative">
                                         <input 
                                             type="number" 
                                             value={inputShare[dev.id]} 
                                             onChange={(e) => setInputShare(prev => ({...prev, [dev.id]: Number(e.target.value)}))}
-                                            className="w-full h-8 px-2 text-right text-xs border border-slate-200 rounded focus:border-indigo-500 outline-none"
+                                            className="w-full h-10 px-3 text-right text-sm font-bold border border-slate-200 rounded-lg focus:border-indigo-500 outline-none transition-colors"
                                         />
-                                        <span className="absolute left-2 top-2 text-[10px] text-slate-400">점유율(%)</span>
+                                        <span className="absolute left-3 top-2.5 text-xs text-slate-400">점유율(%)</span>
                                     </div>
                                 </div>
                             </div>
@@ -524,43 +515,43 @@ export default function App() {
                  {/* 3. Pricing Strategy */}
                  <Card>
                     <SectionHeader icon={TrendingUp} title="요금 책정" />
-                    <div className="flex bg-slate-100 p-1 rounded-lg mb-4">
+                    <div className="flex bg-slate-100 p-1.5 rounded-xl mb-5">
                         {['rapid', 'slow', 'outlet'].map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveFeeTab(tab)}
-                                className={`flex-1 py-1.5 text-[11px] font-bold rounded-md transition-all ${activeFeeTab === tab ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                className={`flex-1 py-2.5 text-xs font-bold rounded-lg transition-all ${activeFeeTab === tab ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                             >
                                 {tab === 'rapid' ? '급속' : tab === 'slow' ? '완속' : '콘센트'}
                             </button>
                         ))}
                     </div>
-                    <div className="flex justify-between items-center mb-4 px-1">
-                        <span className="text-xs font-semibold text-slate-500">계절별 부하 요금제 (TOU)</span>
+                    <div className="flex justify-between items-center mb-5 px-1">
+                        <span className="text-sm font-semibold text-slate-600">계절별 부하 요금제 (TOU)</span>
                         <div 
                             onClick={() => setInputUseTOU(!inputUseTOU)}
-                            className={`w-9 h-5 rounded-full p-1 cursor-pointer transition-colors duration-200 ${inputUseTOU ? 'bg-indigo-600' : 'bg-slate-200'}`}
+                            className={`w-11 h-6 rounded-full p-1 cursor-pointer transition-colors duration-200 ${inputUseTOU ? 'bg-indigo-600' : 'bg-slate-200'}`}
                         >
-                            <div className={`w-3 h-3 bg-white rounded-full shadow-sm transform transition-transform duration-200 ${inputUseTOU ? 'translate-x-4' : 'translate-x-0'}`} />
+                            <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 ${inputUseTOU ? 'translate-x-5' : 'translate-x-0'}`} />
                         </div>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-5">
                         {inputUseTOU ? ['light', 'mid', 'heavy'].map(load => (
-                            <div key={load} className="flex items-center gap-3">
-                                <span className={`text-[10px] font-bold w-10 ${load === 'light' ? 'text-emerald-600' : load === 'mid' ? 'text-amber-500' : 'text-rose-500'}`}>
+                            <div key={load} className="flex items-center gap-4">
+                                <span className={`text-xs font-bold w-12 ${load === 'light' ? 'text-emerald-600' : load === 'mid' ? 'text-amber-500' : 'text-rose-500'}`}>
                                     {load === 'light' ? '경부하' : load === 'mid' ? '중간' : '최대'}
                                 </span>
                                 <input 
                                     type="range" min="100" max="600" step="10"
                                     value={inputDeviceFees[activeFeeTab][load]}
                                     onChange={(e) => setInputDeviceFees(prev => ({...prev, [activeFeeTab]: {...prev[activeFeeTab], [load]: Number(e.target.value)}}))}
-                                    className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                    className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                                 />
-                                <span className="text-xs font-bold w-8 text-right">{inputDeviceFees[activeFeeTab][load]}</span>
+                                <span className="text-sm font-bold w-10 text-right text-slate-700">{inputDeviceFees[activeFeeTab][load]}</span>
                             </div>
                         )) : (
-                            <div className="flex items-center gap-3 py-4">
-                                <span className="text-[10px] font-bold w-10 text-slate-500">단일</span>
+                            <div className="flex items-center gap-4 py-4">
+                                <span className="text-xs font-bold w-12 text-slate-500">단일</span>
                                 <input 
                                     type="range" min="100" max="600" step="10"
                                     value={inputDeviceFees[activeFeeTab].mid}
@@ -568,47 +559,44 @@ export default function App() {
                                         const val = Number(e.target.value);
                                         setInputDeviceFees(prev => ({...prev, [activeFeeTab]: { light: val, mid: val, heavy: val }}));
                                     }}
-                                    className="flex-1 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                                    className="flex-1 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                                 />
-                                <span className="text-xs font-bold w-8 text-right">{inputDeviceFees[activeFeeTab].mid}</span>
+                                <span className="text-sm font-bold w-10 text-right text-slate-700">{inputDeviceFees[activeFeeTab].mid}</span>
                             </div>
                         )}
                     </div>
                     <button 
                         onClick={optimizeFees}
-                        className="group w-full mt-6 py-2.5 rounded-lg border border-indigo-100 bg-indigo-50 text-indigo-700 text-xs font-bold hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-2"
+                        className="group w-full mt-8 py-3.5 rounded-xl border border-indigo-100 bg-indigo-50 text-indigo-700 text-sm font-bold hover:bg-indigo-600 hover:text-white transition-all flex items-center justify-center gap-2 shadow-sm"
                     >
-                        <BrainCircuit size={16} className="text-indigo-500 group-hover:text-white" />
+                        <BrainCircuit size={18} className="text-indigo-500 group-hover:text-white" />
                         AI 지능형 요금 최적화
                     </button>
-                    <p className="text-[10px] text-center text-slate-400 mt-2">
-                        부하 패턴과 사용량을 분석하여 경부하/최대부하 요금을 차등 적용합니다.
-                    </p>
                 </Card>
 
                 {/* 4. Patterns */}
                 <Card className="overflow-hidden">
                     <SectionHeader icon={Clock} title="기기별 부하 패턴" />
-                    <div className="flex bg-slate-100 p-1 rounded-lg mb-4 mx-2">
+                    <div className="flex bg-slate-100 p-1.5 rounded-xl mb-6 mx-1">
                         {['rapid', 'slow', 'outlet'].map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActivePatternTab(tab)}
-                                className={`flex-1 py-1.5 text-[11px] font-bold rounded-md transition-all ${activePatternTab === tab ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${activePatternTab === tab ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                             >
-                                {tab === 'rapid' ? '급속 패턴' : tab === 'slow' ? '완속 패턴' : '콘센트 패턴'}
+                                {tab === 'rapid' ? '급속' : tab === 'slow' ? '완속' : '콘센트'}
                             </button>
                         ))}
                     </div>
-                    <div className="h-32 flex items-end justify-between gap-[2px] mt-2 px-2">
+                    <div className="h-40 flex items-end justify-between gap-[3px] mt-2 px-1">
                         {inputHourlyWeights[activePatternTab].map((weight, h) => {
                             const type = TIME_ZONES[simulationSeason][h];
                             const color = type === 0 ? 'bg-emerald-400' : type === 1 ? 'bg-amber-400' : 'bg-rose-400';
                             return (
                                 <div key={h} className="relative group flex-1 h-full flex items-end">
                                     <div 
-                                        className={`w-full rounded-t-sm transition-all ${color} opacity-80 group-hover:opacity-100`}
-                                        style={{ height: `${weight * 10}%` }}
+                                        className={`w-full rounded-t-sm transition-all ${color} opacity-90 group-hover:opacity-100`}
+                                        style={{ height: `${Math.max(weight * 10, 5)}%` }} // Minimum height for visibility
                                     ></div>
                                     <input 
                                         type="range" min="0" max="10" step="1"
@@ -628,10 +616,12 @@ export default function App() {
                             );
                         })}
                     </div>
-                    <div className="flex justify-between text-[10px] text-slate-400 px-2 mt-1 mb-2">
-                        <span>0시</span>
+                    <div className="flex justify-between text-[10px] text-slate-400 px-1 mt-2 mb-1 font-medium">
+                        <span>00시</span>
+                        <span>06시</span>
                         <span>12시</span>
-                        <span>23시</span>
+                        <span>18시</span>
+                        <span>24시</span>
                     </div>
                 </Card>
             </aside>
@@ -640,73 +630,73 @@ export default function App() {
             <div className="lg:col-span-8 xl:col-span-9 space-y-8">
                 
                 {/* Action Area */}
-                <div className="flex flex-col md:flex-row justify-between items-center bg-indigo-900 rounded-2xl p-6 shadow-lg text-white">
-                    <div>
-                        <h2 className="text-xl font-bold mb-1 flex items-center gap-2">시뮬레이션 대시보드 <LayoutDashboard size={18} className="text-indigo-300"/></h2>
-                        <p className="text-indigo-200 text-sm">설정값을 바탕으로 4가지 요금제를 분석한 결과입니다.</p>
+                <div className="flex flex-col md:flex-row justify-between items-center bg-indigo-900 rounded-2xl p-6 md:p-8 shadow-xl text-white">
+                    <div className="mb-4 md:mb-0 text-center md:text-left">
+                        <h2 className="text-2xl font-bold mb-2 flex items-center justify-center md:justify-start gap-2">시뮬레이션 대시보드 <LayoutDashboard size={20} className="text-indigo-300"/></h2>
+                        <p className="text-indigo-200 text-sm md:text-base">설정값을 바탕으로 4가지 요금제를 분석한 결과입니다.</p>
                     </div>
                     <button 
                         onClick={handleRunSimulation}
                         disabled={!isDirty && allPlanResults.length > 0}
-                        className={`mt-4 md:mt-0 px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 transition-all ${isDirty || allPlanResults.length === 0 ? 'bg-white text-indigo-900 hover:bg-indigo-50 shadow-md' : 'bg-indigo-800 text-indigo-400 cursor-not-allowed'}`}
+                        className={`w-full md:w-auto px-8 py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all shadow-lg ${isDirty || allPlanResults.length === 0 ? 'bg-white text-indigo-900 hover:bg-indigo-50 transform hover:scale-105' : 'bg-indigo-800 text-indigo-400 cursor-not-allowed'}`}
                     >
-                        {isDirty ? <RefreshCw size={16} className="animate-spin-slow"/> : <CheckCircle2 size={16}/>}
+                        {isDirty ? <RefreshCw size={20} className="animate-spin-slow"/> : <CheckCircle2 size={20}/>}
                         {isDirty ? '분석 실행하기' : '분석 완료됨'}
                     </button>
                 </div>
 
                 {/* KPI Cards Grid */}
                 {allPlanResults.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                         {allPlanResults.map((res, idx) => {
                             const isBest = idx === bestPlanId;
                             return (
-                                <Card key={res.plan.id} noPadding className={`relative overflow-hidden flex flex-col ${isBest ? 'ring-2 ring-indigo-500 shadow-indigo-100' : 'hover:border-slate-300'}`}>
-                                    {isBest && <div className="bg-indigo-600 text-white text-[10px] font-bold py-1 text-center">BEST CHOICE</div>}
-                                    <div className="p-5 flex flex-col h-full justify-between">
+                                <Card key={res.plan.id} noPadding className={`relative overflow-hidden flex flex-col ${isBest ? 'ring-2 ring-indigo-500 shadow-indigo-100 transform scale-[1.02] z-10' : 'hover:border-slate-300'}`}>
+                                    {isBest && <div className="bg-indigo-600 text-white text-[10px] font-bold py-1.5 text-center shadow-sm">BEST CHOICE</div>}
+                                    <div className="p-6 flex flex-col h-full justify-between">
                                         <div>
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h3 className={`text-sm font-bold truncate ${isBest ? 'text-indigo-700' : 'text-slate-700'}`}>{res.plan.name}</h3>
+                                            <div className="flex justify-between items-start mb-3">
+                                                <h3 className={`text-base font-bold truncate ${isBest ? 'text-indigo-700' : 'text-slate-700'}`}>{res.plan.name}</h3>
                                             </div>
-                                            <div className="mb-4">
-                                                <span className="text-xs text-slate-400 block mb-0.5">연간 예상 순수익</span>
-                                                <span className={`text-2xl font-extrabold tracking-tight ${res.annual.totalProfit > 0 ? 'text-slate-900' : 'text-rose-500'}`}>
+                                            <div className="mb-5">
+                                                <span className="text-xs font-semibold text-slate-400 block mb-1">연간 예상 순수익</span>
+                                                <span className={`text-3xl font-extrabold tracking-tight ${res.annual.totalProfit > 0 ? 'text-slate-900' : 'text-rose-500'}`}>
                                                     {Math.floor(res.annual.totalProfit / 10000).toLocaleString()}
-                                                    <span className="text-sm font-medium text-slate-400 ml-0.5">만원</span>
+                                                    <span className="text-base font-medium text-slate-400 ml-1">만원</span>
                                                 </span>
                                             </div>
                                             
-                                            {/* [NEW] 계절별 예상 수익 추가 */}
-                                            <div className="grid grid-cols-3 gap-1 mb-2">
-                                                <div className="bg-slate-50/80 rounded p-1.5 text-center">
-                                                    <div className="text-[9px] text-slate-400 mb-0.5 flex justify-center items-center gap-0.5"><CloudSun size={8}/>봄/가을</div>
-                                                    <div className={`text-[10px] font-bold ${res.seasons.springFall.profit > 0 ? 'text-slate-700' : 'text-rose-500'}`}>
+                                            {/* 계절별 예상 수익 */}
+                                            <div className="grid grid-cols-3 gap-2 mb-4">
+                                                <div className="bg-slate-50 rounded-lg p-2 text-center border border-slate-100">
+                                                    <div className="text-[10px] font-bold text-slate-400 mb-1 flex justify-center items-center gap-1"><CloudSun size={10}/>봄/가을</div>
+                                                    <div className={`text-xs font-bold ${res.seasons.springFall.profit > 0 ? 'text-slate-700' : 'text-rose-500'}`}>
                                                         {Math.floor(res.seasons.springFall.profit / 10000).toLocaleString()}
                                                     </div>
                                                 </div>
-                                                <div className="bg-slate-50/80 rounded p-1.5 text-center">
-                                                    <div className="text-[9px] text-slate-400 mb-0.5 flex justify-center items-center gap-0.5"><Sun size={8}/>여름</div>
-                                                    <div className={`text-[10px] font-bold ${res.seasons.summer.profit > 0 ? 'text-slate-700' : 'text-rose-500'}`}>
+                                                <div className="bg-slate-50 rounded-lg p-2 text-center border border-slate-100">
+                                                    <div className="text-[10px] font-bold text-slate-400 mb-1 flex justify-center items-center gap-1"><Sun size={10}/>여름</div>
+                                                    <div className={`text-xs font-bold ${res.seasons.summer.profit > 0 ? 'text-slate-700' : 'text-rose-500'}`}>
                                                         {Math.floor(res.seasons.summer.profit / 10000).toLocaleString()}
                                                     </div>
                                                 </div>
-                                                <div className="bg-slate-50/80 rounded p-1.5 text-center">
-                                                    <div className="text-[9px] text-slate-400 mb-0.5 flex justify-center items-center gap-0.5"><Snowflake size={8}/>겨울</div>
-                                                    <div className={`text-[10px] font-bold ${res.seasons.winter.profit > 0 ? 'text-slate-700' : 'text-rose-500'}`}>
+                                                <div className="bg-slate-50 rounded-lg p-2 text-center border border-slate-100">
+                                                    <div className="text-[10px] font-bold text-slate-400 mb-1 flex justify-center items-center gap-1"><Snowflake size={10}/>겨울</div>
+                                                    <div className={`text-xs font-bold ${res.seasons.winter.profit > 0 ? 'text-slate-700' : 'text-rose-500'}`}>
                                                         {Math.floor(res.seasons.winter.profit / 10000).toLocaleString()}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         
-                                        <div className="space-y-2 pt-3 border-t border-slate-50 mt-auto">
+                                        <div className="space-y-3 pt-4 border-t border-slate-100 mt-auto">
                                             <div className="flex justify-between text-xs">
-                                                <span className="text-slate-400">월평균</span>
-                                                <span className="font-semibold text-slate-600">{Math.floor(res.annual.monthlyAvgProfit / 10000).toLocaleString()}만</span>
+                                                <span className="text-slate-500 font-medium">월평균</span>
+                                                <span className="font-bold text-slate-700">{Math.floor(res.annual.monthlyAvgProfit / 10000).toLocaleString()}만</span>
                                             </div>
                                             <div className="flex justify-between text-xs">
-                                                <span className="text-slate-400">기본료</span>
-                                                <span className="font-semibold text-slate-600">{res.plan.baseRate.toLocaleString()}원</span>
+                                                <span className="text-slate-500 font-medium">기본료</span>
+                                                <span className="font-bold text-slate-700">{res.plan.baseRate.toLocaleString()}원</span>
                                             </div>
                                         </div>
                                     </div>
@@ -715,8 +705,9 @@ export default function App() {
                         })}
                     </div>
                 ) : (
-                    <div className="h-40 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-slate-400 gap-2">
-                        <Info size={20}/> 시뮬레이션을 실행하면 결과가 표시됩니다.
+                    <div className="h-60 border-2 border-dashed border-slate-300 rounded-2xl flex flex-col items-center justify-center text-slate-400 gap-3 bg-slate-50">
+                        <Info size={32} className="text-slate-300"/> 
+                        <span className="font-medium text-lg">시뮬레이션을 실행하면 결과가 표시됩니다.</span>
                     </div>
                 )}
 
@@ -728,15 +719,15 @@ export default function App() {
                             <SectionHeader icon={PieChartIconSvg} title="예상 매출 구성" />
                             <Badge color="blue">Total: {(currentResult.revenue / 10000).toFixed(0)}만원</Badge>
                         </div>
-                        <div className="flex-1 min-h-[250px] relative">
+                        <div className="flex-1 min-h-[300px] relative">
                              <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
                                         data={revenueBreakdown}
                                         cx="50%"
                                         cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={80}
+                                        innerRadius={70}
+                                        outerRadius={90}
                                         paddingAngle={5}
                                         dataKey="value"
                                     >
@@ -746,18 +737,17 @@ export default function App() {
                                     </Pie>
                                     <Tooltip 
                                         formatter={(val) => `${Math.floor(val).toLocaleString()}원`}
-                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontSize: '14px', fontWeight: 'bold' }}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
-                            {/* Center Text Removed for cleaner look */}
                         </div>
-                        <div className="flex justify-center gap-4 mt-4 bg-slate-50 rounded-lg p-3">
+                        <div className="flex justify-center gap-6 mt-2 bg-slate-50 rounded-xl p-4">
                              {revenueBreakdown.map((item, i) => (
-                                 <div key={item.name} className="flex items-center gap-1.5">
-                                     <div className={`w-2.5 h-2.5 rounded-full ${i===0 ? 'bg-blue-500' : i===1 ? 'bg-emerald-500' : 'bg-orange-500'}`}></div>
-                                     <span className="text-xs text-slate-500">{item.name}</span>
-                                     <span className="text-xs font-bold text-slate-800 ml-0.5">
+                                 <div key={item.name} className="flex flex-col items-center gap-1">
+                                     <div className={`w-3 h-3 rounded-full ${i===0 ? 'bg-blue-500' : i===1 ? 'bg-emerald-500' : 'bg-orange-500'}`}></div>
+                                     <span className="text-xs font-semibold text-slate-500">{item.name}</span>
+                                     <span className="text-sm font-bold text-slate-800">
                                         {Math.floor(item.value / 10000).toLocaleString()}만원
                                      </span>
                                  </div>
@@ -769,34 +759,34 @@ export default function App() {
                     <Card className="flex flex-col">
                         <div className="flex justify-between items-center mb-6">
                             <SectionHeader icon={BarChart3} title="시간대별 부하량" />
-                            <div className="flex bg-slate-100 p-0.5 rounded-lg">
+                            <div className="flex bg-slate-100 p-1 rounded-lg">
                                 {['springFall', 'summer', 'winter'].map(s => (
                                     <button
                                         key={s}
                                         onClick={() => setSimulationSeason(s)}
-                                        className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${simulationSeason === s ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                        className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${simulationSeason === s ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
                                     >
                                         {s === 'springFall' ? '봄/가을' : s === 'summer' ? '여름' : '겨울'}
                                     </button>
                                 ))}
                             </div>
                         </div>
-                        <div className="flex-1 min-h-[250px] min-w-0">
+                        <div className="flex-1 min-h-[300px] min-w-0">
                             <ResponsiveContainer width="100%" height="100%">
                                 <BarChart data={dailyChartData} margin={{ top: 20, right: 10, left: 10, bottom: 0 }}>
                                     <XAxis 
                                         dataKey="hour" 
                                         axisLine={false} 
                                         tickLine={false} 
-                                        tick={{ fill: '#94a3b8', fontSize: 10 }} 
+                                        tick={{ fill: '#64748b', fontSize: 12, fontWeight: 600 }} 
                                         interval={3}
+                                        tickFormatter={(val) => `${val}시`}
                                     />
-                                    <YAxis hide />
                                     <Tooltip 
-                                        cursor={{ fill: '#f1f5f9' }}
-                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', fontSize: '12px' }}
+                                        cursor={{ fill: '#f8fafc' }}
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', fontSize: '13px' }}
                                     />
-                                    <Bar dataKey="usage" radius={[4, 4, 0, 0]}>
+                                    <Bar dataKey="usage" radius={[6, 6, 0, 0]}>
                                         {dailyChartData.map((entry, index) => (
                                             <Cell key={`cell-${index}`} fill={entry.color} />
                                         ))}
@@ -804,18 +794,18 @@ export default function App() {
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
-                        <div className="flex justify-center gap-6 mt-4">
+                        <div className="flex justify-center gap-6 mt-4 p-2">
                              <div className="flex items-center gap-2">
                                  <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                                 <span className="text-xs font-medium text-slate-600">경부하</span>
+                                 <span className="text-sm font-bold text-slate-600">경부하</span>
                              </div>
                              <div className="flex items-center gap-2">
                                  <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                                 <span className="text-xs font-medium text-slate-600">중간부하</span>
+                                 <span className="text-sm font-bold text-slate-600">중간부하</span>
                              </div>
                              <div className="flex items-center gap-2">
                                  <div className="w-3 h-3 rounded-full bg-rose-500"></div>
-                                 <span className="text-xs font-medium text-slate-600">최대부하</span>
+                                 <span className="text-sm font-bold text-slate-600">최대부하</span>
                              </div>
                         </div>
                     </Card>
