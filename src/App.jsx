@@ -256,7 +256,8 @@ export default function App() {
     return { totalProfit, monthlyAvgProfit: totalProfit / 12, totalRevenue, totalCost };
   };
 
-  const handleRunSimulation = () => {
+  // [UPDATED]: overrideFees 매개변수를 추가하여 즉시 시뮬레이션 가능하도록 변경
+  const handleRunSimulation = (overrideFees = null) => {
     const commonData = {
       totalUsage: inputTotalUsage,
       targetProfit: inputTargetProfit * 10000, 
@@ -266,7 +267,8 @@ export default function App() {
       costRapidUnit: FIXED_PUBLIC_UNIT_COST, 
       contractPower: inputContractPower,
       hourlyWeights: JSON.parse(JSON.stringify(inputHourlyWeights)),
-      deviceFees: JSON.parse(JSON.stringify(inputDeviceFees)),
+      // overrideFees가 제공되면 그것을 사용하고, 아니면 현재 state 사용
+      deviceFees: overrideFees ? JSON.parse(JSON.stringify(overrideFees)) : JSON.parse(JSON.stringify(inputDeviceFees)),
       useTOU: inputUseTOU,
       season: simulationSeason
     };
@@ -356,11 +358,9 @@ export default function App() {
         });
     });
 
+    // [UPDATED]: State를 업데이트함과 동시에, 계산된 값으로 즉시 시뮬레이션 실행
     setInputDeviceFees(newDeviceFees);
-    
-    setTimeout(() => {
-        handleRunSimulation();
-    }, 100);
+    handleRunSimulation(newDeviceFees);
   };
 
   const dailyChartData = useMemo(() => {
@@ -636,7 +636,7 @@ export default function App() {
                         <p className="text-indigo-200 text-sm md:text-base">설정값을 바탕으로 4가지 요금제를 분석한 결과입니다.</p>
                     </div>
                     <button 
-                        onClick={handleRunSimulation}
+                        onClick={() => handleRunSimulation()}
                         disabled={!isDirty && allPlanResults.length > 0}
                         className={`w-full md:w-auto px-8 py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 transition-all shadow-lg ${isDirty || allPlanResults.length === 0 ? 'bg-white text-indigo-900 hover:bg-indigo-50 transform hover:scale-105' : 'bg-indigo-800 text-indigo-400 cursor-not-allowed'}`}
                     >
