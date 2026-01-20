@@ -132,45 +132,46 @@ const TIME_ZONES = {
   winter: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 1, 1, 1, 1, 1, 2, 2, 2, 1, 1, 2, 0]
 };
 
+// [WARNING] 사용자가 지정한 고정 요금 데이터입니다. 절대 값을 임의로 수정하거나 삭제하지 마세요.
 const KEPCO_PLANS = [
   { 
     id: 0, 
-    name: '선택 I (저압)', 
-    baseRate: 2390, 
+    name: '선택 I', 
+    baseRate: 2580, 
     rates: { 
-      springFall: { light: 60.2, mid: 85.3, heavy: 110.5 }, 
-      summer: { light: 80.5, mid: 135.2, heavy: 170.8 }, 
-      winter: { light: 90.1, mid: 125.4, heavy: 155.3 } 
+      springFall: { light: 80.2, mid: 91.0, heavy: 94.9 }, 
+      summer: { light: 89.8, mid: 129.9, heavy: 151.2 }, 
+      winter: { light: 99.4, mid: 118.4, heavy: 132.4 } 
     } 
   },
   { 
     id: 1, 
-    name: '선택 II (고압A)', 
+    name: '선택 II', 
     baseRate: 2580, 
     rates: { 
-      springFall: { light: 66.8, mid: 88.3, heavy: 109.1 }, 
-      summer: { light: 83.9, mid: 145.3, heavy: 181.5 }, 
-      winter: { light: 93.6, mid: 133.5, heavy: 161.9 } 
+      springFall: { light: 80.2, mid: 91.0, heavy: 94.9 }, 
+      summer: { light: 78.2, mid: 113.0, heavy: 198.6 }, 
+      winter: { light: 95.2, mid: 105.5, heavy: 172.4 } 
     } 
   },
   { 
     id: 2, 
-    name: '선택 III (고압B)', 
-    baseRate: 2230, 
+    name: '선택 III', 
+    baseRate: 2580, 
     rates: { 
-      springFall: { light: 64.1, mid: 85.4, heavy: 105.7 }, 
-      summer: { light: 81.2, mid: 140.2, heavy: 175.8 }, 
-      winter: { light: 90.5, mid: 128.7, heavy: 156.3 } 
+      springFall: { light: 80.2, mid: 91.0, heavy: 94.9 }, 
+      summer: { light: 84.5, mid: 111.9, heavy: 174.0 }, 
+      winter: { light: 103.6, mid: 104.5, heavy: 151.6 } 
     } 
   },
   { 
     id: 3, 
-    name: '단일 요금제', 
-    baseRate: 2400, 
+    name: '선택 IV', 
+    baseRate: 2580, 
     rates: { 
-      springFall: { light: 100, mid: 100, heavy: 100 }, 
-      summer: { light: 100, mid: 100, heavy: 100 }, 
-      winter: { light: 100, mid: 100, heavy: 100 } 
+      springFall: { light: 91.0, mid: 91.0, heavy: 91.0 }, 
+      summer: { light: 137.4, mid: 137.4, heavy: 137.4 }, 
+      winter: { light: 127.7, mid: 127.7, heavy: 127.7 } 
     } 
   },
 ];
