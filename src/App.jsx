@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Zap, Settings, Info, TrendingUp, BrainCircuit, RefreshCw, CheckCircle2, Clock, LayoutDashboard, BarChart3, PieChart as PieChartIconSvg, Sun, CloudSun, Snowflake } from 'lucide-react';
+import { Zap, Settings, Info, TrendingUp, BrainCircuit, RefreshCw, CheckCircle2, Clock, LayoutDashboard, BarChart3, PieChart as PieChartIconSvg, Sun, CloudSun, Snowflake, X } from 'lucide-react';
 
 // ==========================================
 // UI Components (모바일 터치 최적화 & 폰트 확대)
@@ -57,6 +57,66 @@ const Badge = ({ children, color = 'slate' }) => {
     </span>
   );
 };
+
+// Help Modal Component
+const HelpModal = ({ onClose }) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto flex flex-col">
+      <div className="p-5 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+        <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <Info size={20} className="text-indigo-600" />
+          시뮬레이터 사용 가이드
+        </h2>
+        <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
+          <X size={20} />
+        </button>
+      </div>
+      <div className="p-6 space-y-8 overflow-y-auto custom-scrollbar">
+        <section>
+          <h3 className="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <Settings size={16} className="text-slate-500" /> 1. 기본 설정
+          </h3>
+          <p className="text-slate-600 text-sm leading-relaxed pl-6">
+            월간 예상 전력 사용량과 목표 수익을 입력하세요. 계약 전력은 하단 인프라 설정에 따라 자동으로 계산됩니다.
+          </p>
+        </section>
+        
+        <section>
+          <h3 className="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <Zap size={16} className="text-slate-500" /> 2. 인프라 구성
+          </h3>
+          <p className="text-slate-600 text-sm leading-relaxed pl-6">
+            운영할 충전기의 종류(급속/완속/콘센트)와 수량을 설정합니다. <span className="font-bold text-indigo-600">'공용'</span> 체크박스를 선택하면 해당 기기는 공용 요금이 적용되며 계약 전력 산정 방식이 달라질 수 있습니다.
+          </p>
+        </section>
+
+        <section>
+          <h3 className="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <TrendingUp size={16} className="text-slate-500" /> 3. 요금 책정 & AI 최적화
+          </h3>
+          <p className="text-slate-600 text-sm leading-relaxed pl-6">
+            계절별/시간대별(경부하, 중간부하, 최대부하) 요금을 직접 슬라이더로 조정할 수 있습니다. <br/>
+            <span className="inline-flex items-center gap-1 font-bold text-indigo-600 bg-indigo-50 px-1.5 rounded"><BrainCircuit size={12}/> AI 지능형 요금 최적화</span> 버튼을 누르면 목표 수익 달성을 위한 최적의 요금 단가를 자동으로 계산해줍니다.
+          </p>
+        </section>
+
+        <section>
+          <h3 className="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <LayoutDashboard size={16} className="text-slate-500" /> 4. 결과 분석
+          </h3>
+          <p className="text-slate-600 text-sm leading-relaxed pl-6">
+            우측 대시보드에서 '분석 실행하기'를 클릭하면 4가지 한전 요금제(선택 I, II, III, 단일)를 시뮬레이션하여 가장 수익성이 높은 요금제(Best Choice)를 추천해줍니다.
+          </p>
+        </section>
+      </div>
+      <div className="p-5 border-t border-slate-100 bg-slate-50 rounded-b-2xl">
+        <button onClick={onClose} className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-colors shadow-sm">
+          확인했습니다
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 // ==========================================
 // Constants & Initial Data
@@ -153,6 +213,7 @@ export default function App() {
   const [simulationSeason, setSimulationSeason] = useState('summer'); 
   const [activeFeeTab, setActiveFeeTab] = useState('slow');
   const [activePatternTab, setActivePatternTab] = useState('slow'); 
+  const [showHelp, setShowHelp] = useState(false);
 
   const [simData, setSimData] = useState({
     totalUsage: 15000,
@@ -431,7 +492,12 @@ export default function App() {
                    <Info size={14}/>설정 변경됨
                  </span>
                )}
-               <button className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors px-2">도움말</button>
+               <button 
+                onClick={() => setShowHelp(true)}
+                className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors px-2"
+               >
+                도움말
+               </button>
             </div>
         </div>
       </header>
@@ -814,6 +880,8 @@ export default function App() {
             </div>
         </div>
       </main>
+      
+      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
     </div>
   );
 }
