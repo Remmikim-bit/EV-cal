@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { Zap, Settings, Info, TrendingUp, BrainCircuit, RefreshCw, CheckCircle2, Clock, LayoutDashboard, BarChart3, PieChart as PieChartIconSvg, Sun, CloudSun, Snowflake, X } from 'lucide-react';
+import { Zap, Settings, Info, TrendingUp, BrainCircuit, RefreshCw, CheckCircle2, Clock, LayoutDashboard, BarChart3, PieChart as PieChartIconSvg, Sun, CloudSun, Snowflake, X, Lock, Unlock } from 'lucide-react';
 
 // ==========================================
 // UI Components (모바일 터치 최적화 & 폰트 확대)
@@ -106,6 +106,15 @@ const HelpModal = ({ onClose }) => (
           </h3>
           <p className="text-slate-600 text-sm leading-relaxed pl-6">
             우측 대시보드에서 '분석 실행하기'를 클릭하면 4가지 한전 요금제(선택 I, II, III, 단일)를 시뮬레이션하여 가장 수익성이 높은 요금제(Best Choice)를 추천해줍니다.
+          </p>
+        </section>
+        
+        <section>
+          <h3 className="text-base font-bold text-slate-800 mb-2 flex items-center gap-2">
+            <Clock size={16} className="text-slate-500" /> 5. 부하 패턴 수정
+          </h3>
+          <p className="text-slate-600 text-sm leading-relaxed pl-6">
+            모바일 오작동 방지를 위해 패턴 수정이 잠겨있습니다. 패턴을 변경하려면 우측 상단의 <span className="font-bold text-indigo-600">잠금 스위치</span>를 켜서 수정 모드로 전환하세요.
           </p>
         </section>
       </div>
@@ -215,6 +224,7 @@ export default function App() {
   const [activeFeeTab, setActiveFeeTab] = useState('slow');
   const [activePatternTab, setActivePatternTab] = useState('slow'); 
   const [showHelp, setShowHelp] = useState(false);
+  const [isPatternEditable, setIsPatternEditable] = useState(false);
 
   const [simData, setSimData] = useState({
     totalUsage: 15000,
@@ -643,7 +653,23 @@ export default function App() {
 
                 {/* 4. Patterns */}
                 <Card className="overflow-hidden">
-                    <SectionHeader icon={Clock} title="기기별 부하 패턴" />
+                    <div className="relative">
+                        <SectionHeader icon={Clock} title="기기별 부하 패턴" />
+                        <div className="absolute top-0 right-0 flex items-center gap-2">
+                             <span className={`text-xs font-bold ${isPatternEditable ? 'text-indigo-600' : 'text-slate-400'}`}>
+                                {isPatternEditable ? '수정' : '잠금'}
+                             </span>
+                             <button 
+                                onClick={() => setIsPatternEditable(!isPatternEditable)}
+                                className={`w-10 h-6 rounded-full p-1 transition-colors duration-200 ${isPatternEditable ? 'bg-indigo-600' : 'bg-slate-200'}`}
+                            >
+                                <div className={`w-4 h-4 bg-white rounded-full shadow-sm flex items-center justify-center transform transition-transform duration-200 ${isPatternEditable ? 'translate-x-4' : 'translate-x-0'}`}>
+                                    {isPatternEditable ? <Unlock size={10} className="text-indigo-600"/> : <Lock size={10} className="text-slate-400"/>}
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
                     <div className="flex bg-slate-100 p-1.5 rounded-xl mb-6 mx-1">
                         {['rapid', 'slow', 'outlet'].map(tab => (
                             <button
@@ -662,12 +688,13 @@ export default function App() {
                             return (
                                 <div key={h} className="relative group flex-1 h-full flex items-end">
                                     <div 
-                                        className={`w-full rounded-t-sm transition-all ${color} opacity-90 group-hover:opacity-100`}
+                                        className={`w-full rounded-t-sm transition-all ${color} ${isPatternEditable ? 'opacity-90 group-hover:opacity-100' : 'opacity-40'}`}
                                         style={{ height: `${Math.max(weight * 10, 5)}%` }} // Minimum height for visibility
                                     ></div>
                                     <input 
                                         type="range" min="0" max="10" step="1"
                                         value={weight}
+                                        disabled={!isPatternEditable}
                                         onChange={(e) => {
                                             const newWeights = [...inputHourlyWeights[activePatternTab]];
                                             newWeights[h] = Number(e.target.value);
@@ -676,7 +703,7 @@ export default function App() {
                                                 [activePatternTab]: newWeights
                                             }));
                                         }}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-ns-resize z-10"
+                                        className={`absolute inset-0 w-full h-full opacity-0 z-10 ${isPatternEditable ? 'cursor-ns-resize' : 'cursor-default'}`}
                                         style={{ writingMode: 'vertical-lr', direction: 'rtl' }}
                                     />
                                 </div>
