@@ -200,7 +200,6 @@ const DEFAULT_WEIGHTS_OUTLET = [
 export default function App() {
   const [inputTotalUsage, setInputTotalUsage] = useState(15000); 
   const [inputTargetProfit, setInputTargetProfit] = useState(125); 
-  const [inputAnnualInsurance, setInputAnnualInsurance] = useState(225); 
   
   const [inputShare, setInputShare] = useState({ rapid: 10, slow: 50, outlet: 40 });
   const [inputDeviceCount, setInputDeviceCount] = useState({ rapid: 2, slow: 8, outlet: 36 });
@@ -229,9 +228,8 @@ export default function App() {
   const [simData, setSimData] = useState({
     totalUsage: 15000,
     targetProfit: 1250000, 
-    annualInsurance: 2250000,
     share: { rapid: 10, slow: 50, outlet: 40 },
-    deviceCount: { rapid: 2, slow: 8, outlet: 36 }, // 운영비 계산을 위한 기기 수량 추가
+    deviceCount: { rapid: 2, slow: 8, outlet: 36 },
     devicePublic: { rapid: true, slow: false, outlet: false },
     costRapidUnit: FIXED_PUBLIC_UNIT_COST, 
     contractPower: 50,
@@ -263,12 +261,11 @@ export default function App() {
 
   useEffect(() => {
     setIsDirty(true);
-  }, [inputTotalUsage, inputTargetProfit, inputAnnualInsurance, inputShare, inputDeviceCount, inputDevicePublic, inputContractPower, inputHourlyWeights, inputDeviceFees, simulationSeason, inputUseTOU]);
+  }, [inputTotalUsage, inputTargetProfit, inputShare, inputDeviceCount, inputDevicePublic, inputContractPower, inputHourlyWeights, inputDeviceFees, simulationSeason, inputUseTOU]);
 
   // [Calculation Logic]
   const calculateMonthly = (data, seasonKey, plan) => {
-    // deviceCount 구조 분해 할당 추가
-    const { totalUsage, annualInsurance, share, deviceCount, devicePublic, costRapidUnit, contractPower, hourlyWeights, deviceFees } = data;
+    const { totalUsage, share, deviceCount, devicePublic, costRapidUnit, contractPower, hourlyWeights, deviceFees } = data;
     const baseRate = plan.baseRate;
     const rates = plan.rates[seasonKey];
     const timeZones = TIME_ZONES[seasonKey];
@@ -314,12 +311,13 @@ export default function App() {
     
     const costBase = contractPower > 0 ? (contractPower * baseRate) : 0;
     
-    // 기기당 월간 운영비 계산 추가 (기기 총 대수 * 11,000원)
+    // 고정비 계산: 총 기기 대수 산정
     const totalDevices = (deviceCount?.rapid || 0) + (deviceCount?.slow || 0) + (deviceCount?.outlet || 0);
-    const costOperation = totalDevices * 11000;
+    const costInsurance = totalDevices * 3600;  // 보험료 (기당 월 3,600원)
+    const costOperation = totalDevices * 11000; // 관제비 (기당 월 11,000원)
 
-    // totalCost에 운영비(costOperation) 합산
-    const totalCost = costElectricity + costBase + (annualInsurance / 12) + costOperation;
+    // 총 비용 = 전력요금 + 기본요금 + 보험료 + 관제비
+    const totalCost = costElectricity + costBase + costInsurance + costOperation;
     
     return { revenue, cost: totalCost, profit: revenue - totalCost, pattern };
   };
@@ -341,9 +339,8 @@ export default function App() {
     const commonData = {
       totalUsage: inputTotalUsage,
       targetProfit: inputTargetProfit * 10000, 
-      annualInsurance: inputAnnualInsurance * 10000,
       share: { ...inputShare },
-      deviceCount: { ...inputDeviceCount }, // 시뮬레이션 데이터에 기기 수량 추가
+      deviceCount: { ...inputDeviceCount },
       devicePublic: { ...inputDevicePublic },
       costRapidUnit: FIXED_PUBLIC_UNIT_COST, 
       contractPower: inputContractPower,
@@ -369,9 +366,8 @@ export default function App() {
     const tempData = {
       totalUsage: inputTotalUsage,
       targetProfit: inputTargetProfit * 10000, 
-      annualInsurance: inputAnnualInsurance * 10000,
       share: { ...inputShare },
-      deviceCount: { ...inputDeviceCount }, // 최적화용 임시 데이터에도 기기 수량 추가
+      deviceCount: { ...inputDeviceCount },
       devicePublic: { ...inputDevicePublic },
       costRapidUnit: FIXED_PUBLIC_UNIT_COST,
       contractPower: inputContractPower,
